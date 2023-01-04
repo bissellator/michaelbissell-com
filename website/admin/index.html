@@ -1,0 +1,55 @@
+<span class="clickable buttonpost" onclick="listArticles('page', '0')">pages</span>
+<span class="clickable buttonpost" onclick="listArticles('blog', '0')">blogs</span>
+<span class="clickable buttonpost" onclick="listArticles('*', '0')">all</span>
+
+<span class="clickable buttonget" onclick="sortToggle('asc')">asc</span>
+<span class="clickable buttonget" onclick="sortToggle('desc')">desc</span>
+Search:
+<input type=text id=searchbox><br />
+
+<script>
+  var lastcat = ''; var lastpage =''; var lastsort = ''
+  var tokencheck = refreshToken()
+  if (tokencheck.length > 1) {document.location = '/login.html'}
+  var params = {}
+
+  function listArticles(category, page, sortOrder) {
+    if (typeof(sortOrder) == 'undefined') {sortOrder='asc'}
+    lastcat = category
+    lastpage =page
+    lastsort = sortOrder
+    document.getElementById("articles").innerHTML =(
+    listObjects('/v1/pages?category=' + category + "&page=" + page + "&sortBy=posted&sortOrder=" + sortOrder, {
+      title: "pagesname",
+      blurb: "blurb",
+      img: '',
+      link: '/admin/editpage.html?objectID={objectID}'
+    }, 'tiles')
+  )}
+
+  function sortToggle (sortOrder) {
+    listArticles(lastcat, lastpage, sortOrder)
+  }
+
+  searchbox.addEventListener('keyup',function(){
+    path = "/v1/pages?sortOrder=" + lastsort + "&pagesname=" + searchbox.value + "*"
+    searchRes(path)
+  });
+
+  async function searchRes(path) {
+    document.getElementById('articles').innerHTML = listObjects(path,{
+      title: "pagesname",
+      blurb: "blurb",
+      img: '',
+      link: '/admin/edit.html?objectID={objectID}'
+    }, 'tiles')
+
+  }
+
+</script>
+<p><a href="/admin/add.html?add=pages">Add a new page</a></p>
+<div id="articles"></div>
+
+<script>
+  listArticles('blog', '0', 'desc')
+</script>

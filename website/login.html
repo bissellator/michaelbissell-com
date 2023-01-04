@@ -1,0 +1,50 @@
+
+<div id="loginbox"><p>Loading... <img src=https://uxapi.io/images/spinner.gif width=20 height=20></p></div>
+
+<script>
+  var params = {}
+  var urlParams = new URLSearchParams(location.search);
+  for (const [key, value] of urlParams) {
+    params[key] = value;
+  }
+  if (typeof(params.code) == 'undefined') {
+    console.log(uxapihost + '/v1/uxapi/auth/login.html?client_id=' + clientID + '&redirect_uri=' + window.location.href)
+    try {$.get(uxapihost + '/v1/uxapi/auth/login.html?client_id=' + clientID + '&redirect_uri=' + window.location.href,function(response){
+      document.getElementById("loginbox").innerHTML = response;
+    })}catch(err) {console.log(err)}
+  }
+  else {
+    var payload = "grant_type=authorization_code&code=" + params.code
+    $.ajax({
+      url: uxapihost + '/v1/uxapi/tokens/create',
+      async: true,
+      type:'POST',
+      dataType: 'text',
+      data: payload,
+      contentType: 'x-www-form-urlencoded',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader("Authorization", "Basic "+ btoa(clientID + ':' + clientSecret));
+      },
+      success: function(text){
+        try{
+          var json = JSON.parse(text)
+          if (typeof(json.access_token) != 'undefined') {
+            window.sessionStorage.token = json.access_token
+            window.sessionStorage.refresh = json.refresh_token
+            window.location.href = '/admin/index.html'
+          }
+        }catch {
+          console.log(text)
+          var msg = `Something went wrong, please <a href=./login.html>try logging in again</a>`
+          document.getElementById("loginbox").innerHTML = msg
+        }
+        return;
+      },
+      error: function(err) {
+        var msg = `Something went wrong, please <a href=./login.html>try logging in again</a>`
+        document.getElementById("loginbox").innerHTML = msg
+        console.log(err)
+        return;
+      }
+    });  }
+</script>
