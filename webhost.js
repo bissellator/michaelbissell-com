@@ -25,6 +25,8 @@ if (typeof(template[1]) == 'undefined') {
 
 var siteName = contract.info.title
 var pageName = ''
+var pageBlurb = ''
+var pageImage = '/images/bissellator.jpeg'
 
 const port = 8013
 
@@ -108,6 +110,9 @@ var server = http.createServer(function (req, res) {
       footer = template[1]
       header = header.replace(/fSITENAME/g, siteName)
       header = header.replace(/fPAGENAME/g, '')
+      header = header.replace(/fPAGEIMAGE/g, pageImage)
+      header = header.replace(/fPAGEBLURB/g, articles.object.blurb)
+
       footer = footer.replace(/fBLOGMENU/g, blogmenu())
       footer = footer.replace(/fPAGESMENU/g, pagemenu())
       res.writeHead(200, {'Content-Type': contentType});
@@ -117,16 +122,19 @@ var server = http.createServer(function (req, res) {
     else {
       msg = `
         <h2>Sorry...</h2>
-        <p>It looks like the pagesID <I>` + pathels[1] + `</I> doesn't exist</p>
+        <p>It looks like the pagesID object <I>` + pathels[1] + `</I> doesn't exist</p>
       `
       header = template[0]
       footer = template[1]
       header = header.replace(/fSITENAME/g, siteName)
-      header = header.replace(/fPAGENAME/g, '')
+      header = header.replace(/fPAGENAME/g, 'Error')
+      header = header.replace(/fPAGEIMAGE/g, pageImage)
+      header = header.replace(/fPAGEBLURB/g, '')
+
       footer = footer.replace(/fBLOGMENU/g, blogmenu())
       footer = footer.replace(/fPAGESMENU/g, pagemenu())
 
-      res.writeHead(200, {'Content-Type': contentType});
+      res.writeHead(404, {'Content-Type': contentType});
       res.end(header + msg + footer); // Send the file data to the browser.
       return;
     }
@@ -142,6 +150,7 @@ var server = http.createServer(function (req, res) {
       var msg = ''
       var articles = syncreq('GET', uxapihost + '/v1/pages/' + pathels[1], {})
       articles = JSON.parse(articles.body.toString())
+      pageName = articles.object.pagesname
       if (typeof(articles.object) != 'undefined') {
         msg = "<h1 style='padding-bottom:0px;margin:0px'>" + articles.object.pagesname + "</h1><p>" + articles.object.posted + "</p>"
         converter = new showdown.Converter(),
@@ -152,7 +161,10 @@ var server = http.createServer(function (req, res) {
         header = template[0]
         footer = template[1]
         header = header.replace(/fSITENAME/g, siteName)
-        header = header.replace(/fPAGENAME/g, '')
+        header = header.replace(/fPAGENAME/g, pageName)
+        header = header.replace(/fPAGEIMAGE/g, pageImage)
+        header = header.replace(/fPAGEBLURB/g, articles.object.blurb)
+
         footer = footer.replace(/fBLOGMENU/g, blogmenu())
         footer = footer.replace(/fPAGESMENU/g, pagemenu())
         res.writeHead(200, {'Content-Type': contentType});
@@ -168,10 +180,13 @@ var server = http.createServer(function (req, res) {
         footer = template[1]
         header = header.replace(/fSITENAME/g, siteName)
         header = header.replace(/fPAGENAME/g, '')
+        header = header.replace(/fPAGEIMAGE/g, pageImage)
+        header = header.replace(/fPAGEBLURB/g, '')
+
         footer = footer.replace(/fBLOGMENU/g, blogmenu())
         footer = footer.replace(/fPAGESMENU/g, pagemenu())
 
-        res.writeHead(200, {'Content-Type': contentType});
+        res.writeHead(404, {'Content-Type': contentType});
         res.end(header + msg + footer); // Send the file data to the browser.
         return;
       }
@@ -187,6 +202,9 @@ var server = http.createServer(function (req, res) {
 
       header = header.replace(/fSITENAME/g, siteName)
       header = header.replace(/fPAGENAME/g, 'Error')
+      header = header.replace(/fPAGEIMAGE/g, pageImage)
+      header = header.replace(/fPAGEBLURB/g, '')
+
       footer = footer.replace(/fBLOGMENU/g, blogmenu())
       footer = footer.replace(/fPAGESMENU/g, pagemenu())
 
@@ -201,6 +219,9 @@ var server = http.createServer(function (req, res) {
 
     header = header.replace(/fSITENAME/g, siteName)
     header = header.replace(/fPAGENAME/g, 'Error Not Found')
+    header = header.replace(/fPAGEIMAGE/g, pageImage)
+    header = header.replace(/fPAGEBLURB/g, '')
+
     footer = footer.replace(/fBLOGMENU/g, blogmenu())
     footer = footer.replace(/fPAGESMENU/g, pagemenu())
 
@@ -215,6 +236,9 @@ var server = http.createServer(function (req, res) {
           header = template[0]
           header = header.replace(/fSITENAME/g, siteName)
           header = header.replace(/fPAGENAME/g, pageName)
+          header = header.replace(/fPAGEIMAGE/g, pageImage)
+          header = header.replace(/fPAGEBLURB/g, '')
+
           footer = template[1]
           footer = footer.replace(/fBLOGMENU/g, blogmenu())
           footer = footer.replace(/fPAGESMENU/g, pagemenu())
@@ -237,7 +261,7 @@ function blogmenu(page, size) {
   var pages = syncreq('GET', uxapihost + '/v1/pages?category=blog&sortBy=posted&sortOrder=desc&page=' + page + '&size=' + size, {})
   pages = JSON.parse(pages.body.toString())
   for (var i =0; i < pages.objects.length; i++) {
-    msg = msg + `<A href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname) + `">` + pages.objects[i].object.pagesname + `</a><br/>`
+    msg = msg + `<A href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname.replace(/\ /g, '-')) + `">` + pages.objects[i].object.pagesname + `</a><br/>`
   }
   return msg;
 }
@@ -246,10 +270,10 @@ function pagemenu(page, size) {
   if (typeof(page) == 'undefined') { page =0 }
   if (typeof(size) == 'undefined') { size =50 }
   var msg = ""
-  var pages = syncreq('GET', uxapihost + '/v1/pages?category=page&sortBy=sortorder&sortOrder=desc&page=' + page + '&size=' + size, {})
+  var pages = syncreq('GET', uxapihost + '/v1/pages?category=page&sortBy=orderby&sortOrder=asc&page=' + page + '&size=' + size, {})
   pages = JSON.parse(pages.body.toString())
   for (var i =0; i < pages.objects.length; i++) {
-    msg = msg + `<li><A href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname) + `">` + pages.objects[i].object.pagesname + `</a></li>`
+    msg = msg + `<li><A href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname.replace(/\ /g, '-')) + `">` + pages.objects[i].object.pagesname + `</a></li>`
   }
   return msg;
 }
