@@ -32,6 +32,14 @@ const port = 8013
 
 console.log("listening on http://localhost:" + port)
 var server = http.createServer(function (req, res) {
+  header = template[0]
+  footer = template[1]
+
+  var pageURL = `https://michaelbissell.com` + req.url
+  header = header.replace(/fSITENAME/g, siteName)
+  header = header.replace(/fPAGEURL/g, pageURL)
+
+
   var data = ""
   var verb = req.method;
   var queryparams = req.url.split('?')[1]
@@ -106,12 +114,10 @@ var server = http.createServer(function (req, res) {
       html      = converter.makeHtml(text);
 
       msg = msg + "<div class=markdown>" + html + "</div>"
-      header = template[0]
-      footer = template[1]
-      header = header.replace(/fSITENAME/g, siteName)
       header = header.replace(/fPAGENAME/g, '')
+
       header = header.replace(/fPAGEIMAGE/g, pageImage)
-      header = header.replace(/fPAGEBLURB/g, articles.object.blurb)
+      header = header.replace(/fPAGEBLURB/g, articles.object.blurb.replace(/\"/g, "'"))
 
       footer = footer.replace(/fBLOGMENU/g, blogmenu())
       footer = footer.replace(/fPAGESMENU/g, pagemenu())
@@ -124,9 +130,6 @@ var server = http.createServer(function (req, res) {
         <h2>Sorry...</h2>
         <p>It looks like the pagesID object <I>` + pathels[1] + `</I> doesn't exist</p>
       `
-      header = template[0]
-      footer = template[1]
-      header = header.replace(/fSITENAME/g, siteName)
       header = header.replace(/fPAGENAME/g, 'Error')
       header = header.replace(/fPAGEIMAGE/g, pageImage)
       header = header.replace(/fPAGEBLURB/g, '')
@@ -161,12 +164,9 @@ var server = http.createServer(function (req, res) {
 
         msg = msg + "<div class=markdown>" + html + "</div>"
         msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
-        header = template[0]
-        footer = template[1]
-        header = header.replace(/fSITENAME/g, siteName)
         header = header.replace(/fPAGENAME/g, pageName)
         header = header.replace(/fPAGEIMAGE/g, pageImage)
-        header = header.replace(/fPAGEBLURB/g, articles.object.blurb)
+        header = header.replace(/fPAGEBLURB/g, articles.object.blurb.replace(/\"/g, "'"))
 
         footer = footer.replace(/fBLOGMENU/g, blogmenu() + `<script>document.getElementById('` + pathels[1] + `.menu').scrollIntoView();window.scrollTo(0,0)</script>`  )
         footer = footer.replace(/fPAGESMENU/g, pagemenu())
@@ -179,9 +179,6 @@ var server = http.createServer(function (req, res) {
           <h2>Sorry...</h2>
           <p>It looks like the pagesID <I>` + pathels[1] + `</I> doesn't exist</p>
         `
-        header = template[0]
-        footer = template[1]
-        header = header.replace(/fSITENAME/g, siteName)
         header = header.replace(/fPAGENAME/g, '')
         header = header.replace(/fPAGEIMAGE/g, pageImage)
         header = header.replace(/fPAGEBLURB/g, '')
@@ -200,10 +197,7 @@ var server = http.createServer(function (req, res) {
     var stats = fs.statSync(localpath + 'website' + path)
     if (stats.isDirectory() == true) {
       res.writeHead(403, {'Content-Type': 'text/html'})
-      header = template[0]
-      footer = template[1]
 
-      header = header.replace(/fSITENAME/g, siteName)
       header = header.replace(/fPAGENAME/g, 'Error')
       header = header.replace(/fPAGEIMAGE/g, pageImage)
       header = header.replace(/fPAGEBLURB/g, '')
@@ -217,10 +211,7 @@ var server = http.createServer(function (req, res) {
     }
   }catch {
     res.writeHead(404, {'Content-Type': 'text/html'})
-    header = template[0]
-    footer = template[1]
 
-    header = header.replace(/fSITENAME/g, siteName)
     header = header.replace(/fPAGENAME/g, 'Error Not Found')
     header = header.replace(/fPAGEIMAGE/g, pageImage)
     header = header.replace(/fPAGEBLURB/g, '')
@@ -236,8 +227,7 @@ var server = http.createServer(function (req, res) {
         var header = ""
         var footer = ""
         if (contentType == 'text/html') {
-          header = template[0]
-          header = header.replace(/fSITENAME/g, siteName)
+
           header = header.replace(/fPAGENAME/g, pageName)
           header = header.replace(/fPAGEIMAGE/g, pageImage)
           header = header.replace(/fPAGEBLURB/g, '')
