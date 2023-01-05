@@ -158,6 +158,7 @@ var server = http.createServer(function (req, res) {
         html      = converter.makeHtml(text);
 
         msg = msg + "<div class=markdown>" + html + "</div>"
+        msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
         header = template[0]
         footer = template[1]
         header = header.replace(/fSITENAME/g, siteName)
@@ -165,7 +166,7 @@ var server = http.createServer(function (req, res) {
         header = header.replace(/fPAGEIMAGE/g, pageImage)
         header = header.replace(/fPAGEBLURB/g, articles.object.blurb)
 
-        footer = footer.replace(/fBLOGMENU/g, blogmenu())
+        footer = footer.replace(/fBLOGMENU/g, blogmenu() + `<script>document.getElementById('` + pathels[1] + `.menu').scrollIntoView();window.scrollTo(0,0)</script>`  )
         footer = footer.replace(/fPAGESMENU/g, pagemenu())
         res.writeHead(200, {'Content-Type': contentType});
         res.end(header + msg + footer); // Send the file data to the browser.
@@ -258,10 +259,10 @@ function blogmenu(page, size) {
   if (typeof(page) == 'undefined') { page =0 }
   if (typeof(size) == 'undefined') { size =50 }
   var msg = ""
-  var pages = syncreq('GET', uxapihost + '/v1/pages?category=blog&sortBy=posted&sortOrder=desc&page=' + page + '&size=' + size, {})
+  var pages = syncreq('GET', uxapihost + '/v1/pages?category=blog&sortBy=posted&sortOrder=desc&page=' + page + '&size=1000', {})
   pages = JSON.parse(pages.body.toString())
   for (var i =0; i < pages.objects.length; i++) {
-    msg = msg + `<A href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname.replace(/\ /g, '-')) + `">` + pages.objects[i].object.pagesname + `</a><br/>`
+    msg = msg + `<A id="` + pages.objects[i].objectID + `.menu" href="/` + pages.objects[i].objectID + `/` + encodeURIComponent(pages.objects[i].object.pagesname.replace(/\ /g, '-')) + `">` + pages.objects[i].object.pagesname + `</a><br/>`
   }
   return msg;
 }
