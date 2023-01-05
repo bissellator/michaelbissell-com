@@ -224,8 +224,6 @@ var server = http.createServer(function (req, res) {
   }
   fs.readFile(localpath + 'website' + path, function(err, data) {
         if (err) throw err
-        var header = ""
-        var footer = ""
         if (contentType == 'text/html') {
 
           header = header.replace(/fPAGENAME/g, pageName)
