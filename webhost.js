@@ -157,6 +157,8 @@ var server = http.createServer(function (req, res) {
         text      = articles.object.pagesbody,
         html      = converter.makeHtml(text);
 
+        if (articles.object.socialimage.length > 1) {pageImage = articles.object.socialimage}
+
         msg = msg + "<div class=markdown>" + html + "</div>"
         msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
         header = template[0]
