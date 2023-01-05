@@ -196,7 +196,7 @@ function editObjects(path) {
   return resp
 }
 
-function editObject(path, uxapidiv) {
+function editObject(path, formatstr) {
   if (typeof(fieldclasses) == 'undefined') {
     if (typeof(contractpath) == 'undefined') {
       var pathels = path.split('/')
@@ -247,13 +247,12 @@ function editObject(path, uxapidiv) {
     if (typeof(object.error) != 'undefined') {
       return object.error
     }
-    if (typeof(uxapidiv) == 'undefined') {
-      return renderEditObj(path, fieldclasses, object)
+    if (formatstr == 'raw') {
+      for (const [key, value] of Object.entries(fieldclasses)) {
+        fieldclasses[key].class = 'uxapi-textarea'
+      }
     }
-    else {
-      document.getElementById(uxapidiv).innerHTML = renderEditObj(path, fieldclasses, object)
-      return
-    }
+    return renderEditObj(path, fieldclasses, object)
 }
 
 function renderEditObj(path, fieldclasses, object) {
@@ -445,7 +444,7 @@ function putObject(path, payload, method) {
         else {
           try {
             postObjectCleanup( path, text )
-          }catch { console.log("try creating a function postObjectCleanup(path, text)")}
+          }catch {}
         }
     },
     error: function(err) {
@@ -473,14 +472,14 @@ function delObject(path, objectLabel) {
           else {
             try {
               postObjectCleanup( path, text )
-            }catch { console.log("try creating a function postObjectCleanup(path, text)")}
+            }catch {}
           }
       },
       error: function(err) {
           console.log(err)
           try {
             postObjectCleanup( path, err )
-          }catch { console.log("try creating a function postObjectCleanup(path, text)")}
+          }catch {}
 
       }
     });
@@ -934,10 +933,9 @@ function ckEditor(id) {
         window[id] = editor;
       } )
       .catch( error => {
-  //      console.error( 'Something went wrong with ckeditor' );
+        console.error( 'Something went wrong with ckeditor' );
     //    console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
-    //    console.warn( 'Build id: myzmd7eray8w-unt8fr6ckh47' );
-    //    console.error( error );
+        console.error( error );
   },
  );
 
