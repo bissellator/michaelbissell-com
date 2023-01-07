@@ -6,6 +6,7 @@ var syncreq = require('sync-request');
 var http = require('http');
 var localpath = process.argv[2];
 if (typeof localpath == "undefined") {localpath = './'}
+var webhost = "https://michaelbisell.com"
 var uxapihost = "https://api.michaelbissell.com"
 const clientID = "4nh2gusyv1od5u50a8lh8hrrm47jl914"
 const clientSecret = "ko1nne920nq9opbl"
@@ -35,7 +36,7 @@ var server = http.createServer(function (req, res) {
   header = template[0]
   footer = template[1]
 
-  var pageURL = `https://michaelbissell.com` + req.url
+  var pageURL = webhost + req.url
   header = header.replace(/fSITENAME/g, siteName)
   header = header.replace(/fPAGEURL/g, pageURL)
 
@@ -79,19 +80,25 @@ var server = http.createServer(function (req, res) {
     var imgresp = {}
     var respayload = ""
     try {
-      imgresp = syncreq('GET', uxapihost + "/v1/images?imagesname=" + pathels[3], {})
+      var objectID = pathels[3].split('.')[0]
+      imgresp = syncreq('GET', uxapihost + "/v1/pages/" + objectID, {})
       imgresp = JSON.parse(imgresp.body.toString())
       if (typeof(imgresp.error) == 'undefined') {
-        var obj = JSON.parse(JSON.stringify(imgresp.objects[0]))
+        var obj = JSON.parse(JSON.stringify(imgresp))
         if (typeof(obj.object) != 'undefined') {
-          if (typeof(obj.object.image) != 'undefined') {
-            let text = obj.object.image.split(`,`)[1]
-            // let buff = new Buffer(text, 'base64');
-            let buff = Buffer.from(text, "base64");
-            respayload = buff
-            var imgtype = obj.object.image.split(`,`)[0]
-            imgtype = imgtype.split(':')[1]
-            contentType = imgtype.split(';')[0]
+          if (typeof(obj.object.socialimage) != 'undefined') {
+            let text = obj.object.socialimage.split(`,`)
+            console.log(text[0].substring(0,5))
+            if (text[0].substring(0,5) == 'data:') {
+              conentType=text[0].split(':')[1]
+              // let buff = new Buffer(text, 'base64');
+              let buff = Buffer.from(text[1], "base64");
+              respayload = buff
+            }
+            else {
+              contentType = "image/gif"
+              resppayload = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAQAIBRAA7";
+            }
           }
         }
       }
@@ -112,7 +119,7 @@ var server = http.createServer(function (req, res) {
       converter = new showdown.Converter(),
       text      = articles.object.pagesbody,
       html      = converter.makeHtml(text);
-
+      articles.object.blurb = articles.object.blurb.replace(/\n/g, " ")
       msg = msg + "<div class=markdown>" + html + "</div>"
       header = header.replace(/fPAGENAME/g, '')
 
@@ -160,7 +167,17 @@ var server = http.createServer(function (req, res) {
         text      = articles.object.pagesbody,
         html      = converter.makeHtml(text);
 
-        if (articles.object.socialimage.length > 1) {pageImage = articles.object.socialimage}
+        if (articles.object.socialimage.length > 1) {
+          if (articles.object.socialimage.substring(0,4) == 'data') {
+            var imgtype = articles.object.socialimage.split(';')
+            imgtype = imgtype[0].split('/')[1]
+            pageImage = '/images/library/' + articles.objectID + '.' + imgtype
+          }
+          else {
+            pageImage = articles.object.socialimage
+          }
+        }
+        articles.object.blurb = articles.object.blurb.replace(/\n/g, " ")
 
         msg = msg + "<div class=markdown>" + html + "</div>"
         msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
