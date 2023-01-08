@@ -160,7 +160,9 @@ var server = http.createServer(function (req, res) {
       var msg = ''
       var articles = syncreq('GET', uxapihost + '/v1/pages/' + pathels[1], {})
       articles = JSON.parse(articles.body.toString())
-      pageName = articles.object.pagesname
+      try {
+        pageName = articles.object.pagesname
+      }catch {pageName = "Error";}
       if (typeof(articles.object) != 'undefined') {
         msg = "<h1 style='padding-bottom:0px;margin:0px'>" + articles.object.pagesname + "</h1><p>" + articles.object.posted + "</p>"
         converter = new showdown.Converter(),
