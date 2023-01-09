@@ -1,0 +1,13 @@
+            <item>
+              <title>fSITENAME fPAGESNAME</title>
+              <itunes:summary>fBLURB</itunes:summary>
+              <description>fBLURB</description>
+              <content:encoded>fPAGESBODY</content:encoded>
+              <link><content:encoded>fPODCAST</link>
+              <enclosure url="fPODCAST" type="type" length="fFILESIZE"></enclosure>
+              <pubDate>fPUBDATE</pubDate>
+              <itunes:author>Michael Bissell</itunes:author>
+              <itunes:duration>fDURATION</itunes:duration>
+              <itunes:explicit>no</itunes:explicit>
+              <guid>http://example.com/podcast-1</guid>
+            </item>

@@ -74,6 +74,50 @@ var server = http.createServer(function (req, res) {
   if (ext == "ttf") {contentType = "text/plain"}
   if (ext == "map") {contentType = "text/plain"}
   if (ext == "woff") {contentType = "text/plain"}
+  if (ext == "rss") {contentType = "application/rss+xml"}
+
+  // return podcast rss
+  if (pathels[1] == "podcast.rss") {
+    contentType = "application/rss+xml"
+    try {
+      var tmp = fs.readFileSync( localpath + '/objects/rss-outer.xml' )
+      var msg = tmp.toString()
+
+      var podcastXML = fs.readFileSync( localpath + '/objects/rss-item.xml' )
+      podcastXML = podcastXML.toString()
+      var items = syncreq('GET', uxapihost + '/v1/pages?podcast=http*', {})
+      items = JSON.parse(items.body.toString())
+      var podcastList = ""
+      for (var i =0; i < items.objects.length; i++ ) {
+        var tmp = podcastXML
+        var object = items.objects[i].object
+        object.blurb = object.blurb.replace(/\n/g, " ")
+        object.blurb = object.blurb.replace(/\r/g, "")
+        object.pagesbody = object.pagesbody.replace(/\n/g, '<BR />')
+        tmp = tmp.replace(/fSITENAME/g, siteName)
+        tmp = tmp.replace(/fPAGESNAME/g, object.pagesname)
+        tmp = tmp.replace(/fPAGESBODY/g, object.pagesbody)
+        tmp = tmp.replace(/fBLURB/g, object.blurb)
+        tmp = tmp.replace(/fPODCAST/g, object.podcast)
+        tmp = tmp.replace(/fDURATION/g, object.podcastduration)
+        tmp = tmp.replace(/fFILESIZE/g, object.podcastfilesize)
+        var pubdate = new Date(items.objects[i].created)
+        pubdate = pubdate.toUTCString();
+        pubdate = pubdate.replace(/GMT/, '+0000')
+
+//        pubdate = pubdate.split('(')[0]
+        tmp = tmp.replace(/fPUBDATE/g, pubdate)
+        podcastList= podcastList+tmp
+      }
+
+      var msg = msg.replace(/fITEMS/, podcastList)
+
+
+      res.writeHead(200, {'Content-Type': contentType});
+      res.end(msg); // Send the file data to the browser.
+      return
+    }catch (err){ console.log(err)}
+  }
 
   // Return images from the API image library
   if (pathels[1] == 'images' && pathels[2] == 'library') {
