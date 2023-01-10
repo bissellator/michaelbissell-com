@@ -228,6 +228,8 @@ var server = http.createServer(function (req, res) {
 
         msg = msg + "<div class=markdown>" + html + "</div>"
         msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
+
+
         header = header.replace(/fPAGENAME/g, pageName)
         header = header.replace(/fPAGEIMAGE/g, pageImage)
         header = header.replace(/fPAGEBLURB/g, articles.object.blurb.replace(/\"/g, "'"))
