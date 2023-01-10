@@ -14,8 +14,7 @@
 		</itunes:owner>
 		<itunes:explicit>no</itunes:explicit>
 		<itunes:image href="https://michaelbissell.com/images/bissellator.jpg" />
-		<itunes:category text="Technology"/></itunes:category>
+		<itunes:category text="Technology"></itunes:category>
 fITEMS
 	</channel>
-
 </rss>

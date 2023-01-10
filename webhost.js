@@ -6,7 +6,7 @@ var syncreq = require('sync-request');
 var http = require('http');
 var localpath = process.argv[2];
 if (typeof localpath == "undefined") {localpath = './'}
-var webhost = "https://michaelbisell.com"
+var webhost = "https://michaelbissell.com"
 var uxapihost = "https://api.michaelbissell.com"
 const clientID = "4nh2gusyv1od5u50a8lh8hrrm47jl914"
 const clientSecret = "ko1nne920nq9opbl"
@@ -101,6 +101,7 @@ var server = http.createServer(function (req, res) {
         tmp = tmp.replace(/fPODCAST/g, object.podcast)
         tmp = tmp.replace(/fDURATION/g, object.podcastduration)
         tmp = tmp.replace(/fFILESIZE/g, object.podcastfilesize)
+        tmp = tmp.replace(/fOBJECTID/g, 'https://michaelbissell.com/' + items.objects[i].objectID + '/' + encodeURIComponent(object.pagesname))
         var pubdate = new Date(items.objects[i].created)
         pubdate = pubdate.toUTCString();
         pubdate = pubdate.replace(/GMT/, '+0000')
