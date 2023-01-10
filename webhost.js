@@ -227,6 +227,21 @@ var server = http.createServer(function (req, res) {
         articles.object.blurb = articles.object.blurb.replace(/\n/g, " ")
 
         msg = msg + "<div class=markdown>" + html + "</div>"
+
+        try {
+          if (articles.object.podcast.substring(0,4) == 'http') {
+            var msg = msg + `
+            <p>Listen to the podcast:</p>
+              <div>
+                <audio controls>
+                  <source src="` + articles.object.podcast + `" type="audio/mpeg">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            `
+          }
+        }catch {}
+
         msg = msg + `<script>if (typeof(window.sessionStorage.token) != 'undefined') {document.write('<p><a href=/admin/editpage.html?objectID=` + pathels[1] + `>edit</a></p>')}</script>`
 
 
