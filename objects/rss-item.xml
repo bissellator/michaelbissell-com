@@ -2,8 +2,8 @@
               <title>fSITENAME fPAGESNAME</title>
               <itunes:summary>fBLURB</itunes:summary>
               <description>fBLURB</description>
-              <link>fPODCAST</link>
-              <enclosure url="fPODCAST" type="audio/m4a" length="fFILESIZE"></enclosure>
+              <link>fOBJECTID</link>
+              <enclosure url="fPODCAST" type="audio/mpeg" length="fFILESIZE"></enclosure>
               <pubDate>fPUBDATE</pubDate>
               <itunes:author>Michael Bissell</itunes:author>
               <itunes:duration>fDURATION</itunes:duration>
