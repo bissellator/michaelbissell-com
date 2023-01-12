@@ -18,15 +18,19 @@
   if (typeof(podcasts.objects) != 'undefined') {
     var msg = ""
     for (var i=0; i< podcasts.objects.length; i++) {
-      msg = msg + `<span class="clickable" onclick="playTrack({ podcast: '` + podcasts.objects[i].object.podcast + `', art: '/images/library/` + podcasts.objects[i].objectID + `', title: '`+ podcasts.objects[i].object.pagesname + `'})"><B>` + podcasts.objects[i].object.pagesname + `</B> (`+ podcasts.objects[i].object.podcastduration + `)<br>` + podcasts.objects[i].object.blurb + `</span><hr/>`
+      msg = msg + `<span class="clickable" onclick="playTrack({ podcast: '` + podcasts.objects[i].object.podcast + `', art: '/images/library/` + podcasts.objects[i].objectID + `', title: '`+ podcasts.objects[i].object.pagesname + `', autoplay: 'yes'})"><B>` + podcasts.objects[i].object.pagesname + `</B> (`+ podcasts.objects[i].object.podcastduration + `)<br>` + podcasts.objects[i].object.blurb + `</span><hr/>`
     }
     document.getElementById("playlist").innerHTML = msg
-    playTrack({ podcast: podcasts.objects[0].object.podcast, art: '/images/library/' + podcasts.objects[0].objectID, title: podcasts.objects[0].object.pagesname })
+    playTrack({ podcast: podcasts.objects[0].object.podcast, art: '/images/library/' + podcasts.objects[0].objectID, title: podcasts.objects[0].object.pagesname, autoplay: "no" })
   }
 
   function playTrack(audioObj) {
     var playme = player
-    playme = playme.replace(/audio controls/, "audio controls autoplay")
+    if (typeof(audioObj.autoplay) != 'undefined') {
+      if (audioObj.autoplay == 'yes') {
+        playme = playme.replace(/audio controls/, "audio controls autoplay")
+      }
+    }
     playme = playme.replace(/fIMG/g, audioObj.art)
     playme = playme.replace(/fPODCAST/g, audioObj.podcast)
     playme = playme.replace(/fBLURB/g, audioObj.title)
@@ -34,3 +38,6 @@
   }
 
 </script>
+
+<a href="https://open.spotify.com/show/0oJ3gRYyEVYDQ6YdxzKXOr" target="_blank"><img style="height:50px" src="/images/spotify.webp" border=0/></a>
+<a href="/podcast.rss" target="_blank"><img style="height:50px" src="/images/podcast-rss-badge.png" border=0/></a> -->

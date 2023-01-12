@@ -133,7 +133,6 @@ var server = http.createServer(function (req, res) {
         if (typeof(obj.object) != 'undefined') {
           if (typeof(obj.object.socialimage) != 'undefined') {
             let text = obj.object.socialimage.split(`,`)
-            console.log(text[0].substring(0,5))
             if (text[0].substring(0,5) == 'data:') {
               conentType=text[0].split(':')[1]
               // let buff = new Buffer(text, 'base64');
